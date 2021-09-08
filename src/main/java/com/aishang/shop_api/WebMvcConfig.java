@@ -14,7 +14,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Resource
     TokenIntercetper tokenIntercetper;
 
-    //映射路径
+    // 映射路径
     @Value("${file.staticAccessPath}")
     private String staticAccessPath;
     @Value("${file.uploadFolder}")
