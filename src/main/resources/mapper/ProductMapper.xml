@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aishang.shop_api.dao.ProductMapper">
+  <resultMap id="BaseResultMap" type="com.aishang.shop_api.po.Product">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="p_id" jdbcType="INTEGER" property="pId" />
+    <result column="p_name" jdbcType="VARCHAR" property="pName" />
+    <result column="market_price" jdbcType="DOUBLE" property="marketPrice" />
+    <result column="shop_price" jdbcType="DOUBLE" property="shopPrice" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="p_desc" jdbcType="VARCHAR" property="pDesc" />
+    <result column="is_hot" jdbcType="INTEGER" property="isHot" />
+    <result column="p_date" jdbcType="TIMESTAMP" property="pDate" />
+    <result column="cs_id" jdbcType="INTEGER" property="csId" />
+  </resultMap>
+
+<!--  商品管理查询+分页插件-->
+  <select id="getProducts" resultType="ProductExt" resultMap="BaseResultMap">
+        select product.* from product
+        <if test="cId!=null">
+          inner join category_second
+          on product.cs_id=category_second.cs_id
+        </if>
+        <where>
+          <if test="pName!=null">
+            and product.p_name like "%"#{pName}"%"
+          </if>
+          <if test="csId!=null">
+            and product.cs_id = #{csId}
+          </if>
+          <if test="cId!=null">
+          and category_second.c_id = #{cId}
+          </if>
+
+
+        </where>
+    order by product.p_date desc
+  </select>
+<!--    删除商品+++++++++++并且不能有未结束订单-->
+  <delete id="delProduct" parameterType="Integer" >
+    delete from product where p_id=#{pd} and
+            (select count(`order`.o_id) as p_id
+                    from `order` inner join order_item
+                    on `order`.o_id = order_item.o_id
+                    where `order`.state!=3
+                    and`order`.state!=-1
+                    and order_item.p_id =#{pId})=0
+  </delete>
+<!--    修改商品信息-->
+    <update id="updateProduct" parameterType="Product">
+        update product set p_name = #{pName},market_price=#{marketPrice},
+                           shop_price=#{shopPrice},p_desc=#{pDesc},p_date =#{pDate}
+        where p_id = #{pId}
+    </update>
+
+</mapper>

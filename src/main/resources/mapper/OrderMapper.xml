@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aishang.shop_api.dao.OrderMapper">
+<!--  <resultMap id="BaseResultMap" type="com.aishang.shop_api.po.Order">-->
+<!--    &lt;!&ndash;-->
+<!--      WARNING - @mbg.generated-->
+<!--    &ndash;&gt;-->
+<!--    <id column="o_id" jdbcType="INTEGER" property="oId" />-->
+<!--    <result column="total" jdbcType="DOUBLE" property="total" />-->
+<!--    <result column="order_time" jdbcType="TIMESTAMP" property="orderTime" />-->
+<!--    <result column="state" jdbcType="INTEGER" property="state" />-->
+<!--    <result column="name" jdbcType="VARCHAR" property="name" />-->
+<!--    <result column="phone" jdbcType="VARCHAR" property="phone" />-->
+<!--    <result column="addr" jdbcType="VARCHAR" property="addr" />-->
+<!--    <result column="u_id" jdbcType="INTEGER" property="uId" />-->
+<!--  </resultMap>-->
+<!--  order ←-继承 OrderExt{订单项集合(product对象)}  -->
+  <resultMap id="OrderExt" type="com.aishang.shop_api.po.OrderExt">
+    <id column="o_id" jdbcType="INTEGER" property="oId" />
+    <result column="total" jdbcType="DOUBLE" property="total" />
+    <result column="order_time" jdbcType="TIMESTAMP" property="orderTime" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="addr" jdbcType="VARCHAR" property="addr" />
+    <result column="u_id" jdbcType="INTEGER" property="uId" />
+    <collection  property="orderList" ofType="OrderExt" >
+      <id column="o_id" jdbcType="INTEGER" property="oId" />
+      <result column="total" jdbcType="DOUBLE" property="total" />
+      <result column="order_time" jdbcType="TIMESTAMP" property="orderTime" />
+      <result column="state" jdbcType="INTEGER" property="state" />
+      <result column="name" jdbcType="VARCHAR" property="name" />
+      <result column="phone" jdbcType="VARCHAR" property="phone" />
+      <result column="addr" jdbcType="VARCHAR" property="addr" />
+      <result column="u_id" jdbcType="INTEGER" property="uId" />
+    </collection>
+    <collection property="orderItemExtList" ofType="OrderItemExt">
+      <id column="item_id" jdbcType="INTEGER" property="itemId" />
+      <result column="count" jdbcType="INTEGER" property="count" />
+      <result column="sub_total" jdbcType="DOUBLE" property="subTotal" />
+      <result column="p_id" jdbcType="INTEGER" property="pId" />
+      <result column="o_id" jdbcType="INTEGER" property="oId" />
+      <association property="product" javaType="Product">
+        <id column="p_id" jdbcType="INTEGER" property="pId" />
+        <result column="p_name" jdbcType="VARCHAR" property="pName" />
+        <result column="market_price" jdbcType="DOUBLE" property="marketPrice" />
+        <result column="shop_price" jdbcType="DOUBLE" property="shopPrice" />
+        <result column="image" jdbcType="VARCHAR" property="image" />
+        <result column="p_desc" jdbcType="VARCHAR" property="pDesc" />
+        <result column="is_hot" jdbcType="INTEGER" property="isHot" />
+        <result column="p_date" jdbcType="TIMESTAMP" property="pDate" />
+        <result column="cs_id" jdbcType="INTEGER" property="csId" />
+      </association>
+    </collection>
+  </resultMap>
+<!--  获取订单集合-->
+  <select id="getOrders" parameterType="OrderExt"  resultMap="OrderExt">
+        select * from `order` ORDER BY o_id desc
+  </select>
+<!--  获取*状态的订单-->
+  <select id="getStateOrder" parameterType="OrderExt" resultMap="OrderExt">
+    select  * from `order` WHERE state=#{state} ORDER BY o_id desc
+  </select>
+<!--  订单详情-->
+  <select id="orderDetail" parameterType="Integer" resultMap="OrderExt">
+    select * from `order` inner join order_item  on `order`.o_id = order_item.o_id
+         inner join product on order_item.p_id = product.p_id where `order`.o_id =#{oId}
+  </select>
+<!--  修改订单-->
+    <update id="updateOrder" parameterType="Order">
+      update `order` set name=#{name},phone=#{phone},addr=#{addr} where o_id=#{oId}
+    </update>
+<!--  确认发货-->
+  <update id="confirmOrder" parameterType="Integer">
+    update `order` set state = 2 where o_id = #{oId}
+  </update>
+
+</mapper>

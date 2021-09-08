@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aishang.shop_api.dao.CategoryMapper">
+  <resultMap id="BaseResultMap" type="com.aishang.shop_api.po.Category">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="c_id" jdbcType="INTEGER" property="cId" />
+    <result column="c_name" jdbcType="VARCHAR" property="cName" />
+  </resultMap>
+<!--  查询一级类目-->
+  <select id="getCategory" resultMap="BaseResultMap">
+    select * from Category
+  </select>
+</mapper>
